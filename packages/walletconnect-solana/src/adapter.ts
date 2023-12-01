@@ -5,7 +5,7 @@ import type { EngineTypes, SessionTypes, SignClientTypes } from '@walletconnect/
 import { getSdkError, parseAccountId } from '@walletconnect/utils';
 import base58 from 'bs58';
 import { ClientNotInitializedError, QRCodeModalError } from './errors.js';
-import { devnetMainnetWalletIds, mainnetWalletIds } from './supported-wallets;
+import { devnetMainnetWalletIds, mainnetWalletIds } from './supported-wallets';
 
 export interface WalletConnectWalletAdapterConfig {
     network: WalletConnectChainID;
@@ -58,7 +58,6 @@ export class WalletConnectWallet {
     private readonly _network: WalletConnectChainID;
     private readonly _options: SignClientTypes.Options;
     private readonly _explorerRecommendedWalletIds: string[];
-
 
     constructor(config: WalletConnectWalletAdapterConfig) {
         this._options = config.options;
