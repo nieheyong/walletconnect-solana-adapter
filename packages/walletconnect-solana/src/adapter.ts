@@ -1,14 +1,16 @@
 import { Transaction, VersionedTransaction, PublicKey } from '@solana/web3.js';
-import QRCodeModal from '@walletconnect/qrcode-modal';
+import { WalletConnectModal } from '@walletconnect/modal';
 import WalletConnectClient from '@walletconnect/sign-client';
 import type { EngineTypes, SessionTypes, SignClientTypes } from '@walletconnect/types';
 import { getSdkError, parseAccountId } from '@walletconnect/utils';
 import base58 from 'bs58';
 import { ClientNotInitializedError, QRCodeModalError } from './errors.js';
+import { devnetMainnetWalletIds, mainnetWalletIds } from './supported-wallets;
 
 export interface WalletConnectWalletAdapterConfig {
     network: WalletConnectChainID;
     options: SignClientTypes.Options;
+    explorerRecommendedWalletIds: string[];
 }
 
 export enum WalletConnectChainID {
@@ -38,15 +40,40 @@ const getConnectParams = (chainId: WalletConnectChainID): EngineTypes.FindParams
 const isVersionedTransaction = (transaction: Transaction | VersionedTransaction): transaction is VersionedTransaction =>
     'version' in transaction;
 
+const shuffleArray = (array: string[]) => {
+    for (let i = array.length - 1; i > 0; i--) {
+        // Generate a random index smaller than the current index
+        const j = Math.floor(Math.random() * (i + 1));
+
+        // Swap elements at indices i and j
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+};
+
 export class WalletConnectWallet {
     private _client: WalletConnectClient | undefined;
     private _session: SessionTypes.Struct | undefined;
+    private _modal: WalletConnectModal;
     private readonly _network: WalletConnectChainID;
     private readonly _options: SignClientTypes.Options;
+    private readonly _explorerRecommendedWalletIds: string[];
+
 
     constructor(config: WalletConnectWalletAdapterConfig) {
         this._options = config.options;
         this._network = config.network;
+        this._explorerRecommendedWalletIds = config.explorerRecommendedWalletIds || [];
+
+        this._modal = new WalletConnectModal({
+            projectId: this._options.projectId!,
+            chains: [this._network],
+            explorerRecommendedWalletIds: [
+                ...this._explorerRecommendedWalletIds,
+                ...shuffleArray(devnetMainnetWalletIds),
+                ...shuffleArray(mainnetWalletIds),
+            ],
+        });
     }
 
     async connect(): Promise<WalletConnectWalletInit> {
@@ -64,8 +91,15 @@ export class WalletConnectWallet {
         } else {
             const { uri, approval } = await client.connect(getConnectParams(this._network));
             return new Promise((resolve, reject) => {
+                this._modal.subscribeModal((state) => {
+                    // the modal was closed so reject the promise
+                    if (!state.open && !this._session) {
+                        reject(new Error('Connection request reset. Please try again.'));
+                    }
+                });
+
                 if (uri) {
-                    QRCodeModal.open(uri, () => {
+                    this._modal.openModal({ uri }).catch(() => {
                         reject(new QRCodeModalError());
                     });
                 }
@@ -80,7 +114,7 @@ export class WalletConnectWallet {
                     })
                     .catch(reject)
                     .finally(() => {
-                        QRCodeModal.close();
+                        this._modal.closeModal();
                     });
             });
         }
