@@ -5,12 +5,10 @@ import type { EngineTypes, SessionTypes, SignClientTypes } from '@walletconnect/
 import { getSdkError, parseAccountId } from '@walletconnect/utils';
 import base58 from 'bs58';
 import { ClientNotInitializedError, QRCodeModalError } from './errors.js';
-import { devnetMainnetWalletIds, mainnetWalletIds } from './supported-wallets';
 
 export interface WalletConnectWalletAdapterConfig {
     network: WalletConnectChainID;
     options: SignClientTypes.Options;
-    explorerRecommendedWalletIds: string[];
 }
 
 export enum WalletConnectChainID {
@@ -57,21 +55,14 @@ export class WalletConnectWallet {
     private _modal: WalletConnectModal;
     private readonly _network: WalletConnectChainID;
     private readonly _options: SignClientTypes.Options;
-    private readonly _explorerRecommendedWalletIds: string[];
 
     constructor(config: WalletConnectWalletAdapterConfig) {
         this._options = config.options;
         this._network = config.network;
-        this._explorerRecommendedWalletIds = config.explorerRecommendedWalletIds || [];
 
         this._modal = new WalletConnectModal({
             projectId: this._options.projectId!,
             chains: [this._network],
-            explorerRecommendedWalletIds: [
-                ...this._explorerRecommendedWalletIds,
-                ...shuffleArray(devnetMainnetWalletIds),
-                ...shuffleArray(mainnetWalletIds),
-            ],
         });
     }
 
