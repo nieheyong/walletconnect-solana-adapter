@@ -38,17 +38,6 @@ const getConnectParams = (chainId: WalletConnectChainID): EngineTypes.FindParams
 const isVersionedTransaction = (transaction: Transaction | VersionedTransaction): transaction is VersionedTransaction =>
     'version' in transaction;
 
-const shuffleArray = (array: string[]) => {
-    for (let i = array.length - 1; i > 0; i--) {
-        // Generate a random index smaller than the current index
-        const j = Math.floor(Math.random() * (i + 1));
-
-        // Swap elements at indices i and j
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-};
-
 export class WalletConnectWallet {
     private _client: WalletConnectClient | undefined;
     private _session: SessionTypes.Struct | undefined;
