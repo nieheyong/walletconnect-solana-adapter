@@ -1,4 +1,6 @@
-# How to run this repo?
+# WalletConnect Solana Adapter - Core
+
+## How to run this repo?
 
 1. Install dependencies
 
@@ -18,7 +20,11 @@ pnpm run build:package
 pnpm run dev:playground
 ```
 
-# How to make a release?
+## How to Test?
+
+Most Mobile wallets don't support Testnet/Devnet. Either change the network to Mainnet or use our [sample wallet](https://react-wallet.walletconnect.com/).
+
+## How to make a release?
 
 1. Build the package
 
