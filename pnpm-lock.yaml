@@ -39,6 +39,12 @@ importers:
 
   playground:
     dependencies:
+      '@esbuild-plugins/node-globals-polyfill':
+        specifier: ^0.2.3
+        version: 0.2.3(esbuild@0.21.5)
+      '@noble/curves':
+        specifier: ^1.4.0
+        version: 1.4.0
       '@solana/wallet-adapter-base':
         specifier: ^0.9.23
         version: 0.9.23(@solana/web3.js@1.78.0(bufferutil@4.0.7)(utf-8-validate@5.0.10))
@@ -57,12 +63,21 @@ importers:
       '@walletconnect/solana-adapter-core':
         specifier: 'workspace: *'
         version: link:../packages/walletconnect-solana
+      bs58:
+        specifier: 5.0.0
+        version: 5.0.0
+      buffer:
+        specifier: ^6.0.3
+        version: 6.0.3
       react:
         specifier: ^18.3.1
         version: 18.3.1
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
+      react-hot-toast:
+        specifier: ^2.4.1
+        version: 2.4.1(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     devDependencies:
       '@types/react':
         specifier: ^18.3.3
@@ -886,6 +901,11 @@ packages:
   '@emurgo/cardano-serialization-lib-nodejs@11.5.0':
     resolution: {integrity: sha512-IlVABlRgo9XaTR1NunwZpWcxnfEv04ba2l1vkUz4S1W7Jt36F4CtffP+jPeqBZGnAe+fnUwo0XjIJC3ZTNToNQ==}
 
+  '@esbuild-plugins/node-globals-polyfill@0.2.3':
+    resolution: {integrity: sha512-r3MIryXDeXDOZh7ih1l/yE9ZLORCd5e8vWg02azWRGj5SPTuoh69A2AIyn0Z31V/kHBfZ4HgWJ+OK3GTTwLmnw==}
+    peerDependencies:
+      esbuild: '*'
+
   '@esbuild/aix-ppc64@0.21.5':
     resolution: {integrity: sha512-1SDgH6ZSPTlggy1yI6+Dbkiz8xzpHJEVAlF/AM1tHPLsf5STom9rwtjE4hKAF20FfXXNTFqEYXyJNWh1GiZedQ==}
     engines: {node: '>=12'}
@@ -1237,9 +1257,6 @@ packages:
 
   '@ngraveio/bc-ur@1.1.13':
     resolution: {integrity: sha512-j73akJMV4+vLR2yQ4AphPIT5HZmxVjn/LxpL7YHoINnXoH6ccc90Zzck6/n6a3bCXOVZwBxq+YHwbAKRV+P8Zg==}
-
-  '@noble/curves@1.1.0':
-    resolution: {integrity: sha512-091oBExgENk/kGj3AZmtBDMpxQPDtxQABR2B9lb1JbVTs6ytdzZNwvhxQ4MWasRNEzlbEH8jCWFCwhF/Obj5AA==}
 
   '@noble/curves@1.4.0':
     resolution: {integrity: sha512-p+4cb332SFCrReJkCYe8Xzm0OWi4Jji5jVdIZRL/PmacmDkFNw6MrrV+gGpiPxLHbV+zKFRywUWbaseT+tZRXg==}
@@ -3399,6 +3416,11 @@ packages:
     resolution: {integrity: sha512-jhIXaOzy1sb8IyocaruWSn1TjmnBVs8Ayhcy83rmxNJ8q2uWKCAj3CnJY+KpGSXCueAPc0i05kVvVKtP1t9S3g==}
     engines: {node: '>=10'}
 
+  goober@2.1.14:
+    resolution: {integrity: sha512-4UpC0NdGyAFqLNPnhCT2iHpza2q+RAY3GV85a/mRPdzyPQMsj0KmMMuetdIkzWRbJ+Hgau1EZztq8ImmiMGhsg==}
+    peerDependencies:
+      csstype: ^3.0.10
+
   gopd@1.0.1:
     resolution: {integrity: sha512-d65bNlIadxvpb/A2abVdlqKqV563juRnZ1Wtk6s1sIR8uNsXR70xqIzVqxVf1eTqDunwT2MkczEeaezCKTZhwA==}
 
@@ -4449,6 +4471,13 @@ packages:
     resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
     peerDependencies:
       react: ^18.3.1
+
+  react-hot-toast@2.4.1:
+    resolution: {integrity: sha512-j8z+cQbWIM5LY37pR6uZR6D4LfseplqnuAO4co4u8917hBUvXlEqyP1ZzqVLcqoyUesZZv/ImreoCeHVDpE5pQ==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>=16'
+      react-dom: '>=16'
 
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
@@ -6324,6 +6353,10 @@ snapshots:
 
   '@emurgo/cardano-serialization-lib-nodejs@11.5.0': {}
 
+  '@esbuild-plugins/node-globals-polyfill@0.2.3(esbuild@0.21.5)':
+    dependencies:
+      esbuild: 0.21.5
+
   '@esbuild/aix-ppc64@0.21.5':
     optional: true
 
@@ -6726,10 +6759,6 @@ snapshots:
       crc: 3.8.0
       jsbi: 3.2.5
       sha.js: 2.4.11
-
-  '@noble/curves@1.1.0':
-    dependencies:
-      '@noble/hashes': 1.3.1
 
   '@noble/curves@1.4.0':
     dependencies:
@@ -7550,7 +7579,7 @@ snapshots:
 
   '@solana/wallet-adapter-unsafe-burner@0.1.7(@solana/web3.js@1.78.0(bufferutil@4.0.7)(utf-8-validate@5.0.10))':
     dependencies:
-      '@noble/curves': 1.1.0
+      '@noble/curves': 1.4.0
       '@solana/wallet-adapter-base': 0.9.23(@solana/web3.js@1.78.0(bufferutil@4.0.7)(utf-8-validate@5.0.10))
       '@solana/wallet-standard-features': 1.2.0
       '@solana/wallet-standard-util': 1.1.1
@@ -7668,7 +7697,7 @@ snapshots:
 
   '@solana/wallet-standard-util@1.1.1':
     dependencies:
-      '@noble/curves': 1.1.0
+      '@noble/curves': 1.4.0
       '@solana/wallet-standard-chains': 1.1.0
       '@solana/wallet-standard-features': 1.2.0
 
@@ -7719,7 +7748,7 @@ snapshots:
   '@solana/web3.js@1.78.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)':
     dependencies:
       '@babel/runtime': 7.22.10
-      '@noble/curves': 1.1.0
+      '@noble/curves': 1.4.0
       '@noble/hashes': 1.3.1
       '@solana/buffer-layout': 4.0.1
       agentkeepalive: 4.3.0
@@ -8978,7 +9007,7 @@ snapshots:
 
   bs58check@3.0.1:
     dependencies:
-      '@noble/hashes': 1.3.1
+      '@noble/hashes': 1.4.0
       bs58: 5.0.0
 
   bser@2.1.1:
@@ -9739,6 +9768,10 @@ snapshots:
       ignore: 5.2.0
       merge2: 1.4.1
       slash: 3.0.0
+
+  goober@2.1.14(csstype@3.1.3):
+    dependencies:
+      csstype: 3.1.3
 
   gopd@1.0.1:
     dependencies:
@@ -10937,6 +10970,14 @@ snapshots:
       loose-envify: 1.4.0
       react: 18.3.1
       scheduler: 0.23.2
+
+  react-hot-toast@2.4.1(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      goober: 2.1.14(csstype@3.1.3)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    transitivePeerDependencies:
+      - csstype
 
   react-is@16.13.1: {}
 

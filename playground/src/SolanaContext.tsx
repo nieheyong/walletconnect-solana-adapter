@@ -18,7 +18,7 @@ export const SolanaContext = ({ children }: { children: ReactNode }) => {
 	const wallets = useMemo(
 		() => [
 			new WalletConnectWalletAdapter({
-				network: WalletAdapterNetwork.Mainnet,
+				network: WalletAdapterNetwork.Devnet,
 				options: {
 					projectId: 'bd4997ce3ede37c95770ba10a3804dad',
 				},
