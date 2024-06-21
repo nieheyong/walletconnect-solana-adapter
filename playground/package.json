@@ -10,14 +10,19 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"@esbuild-plugins/node-globals-polyfill": "^0.2.3",
+		"@noble/curves": "^1.4.0",
 		"@solana/wallet-adapter-base": "^0.9.23",
 		"@solana/wallet-adapter-react": "^0.15.35",
 		"@solana/wallet-adapter-react-ui": "^0.9.35",
 		"@solana/wallet-adapter-wallets": "^0.19.32",
-		"@walletconnect/solana-adapter-core": "workspace: *",
 		"@solana/web3.js": "^1.78.0",
+		"@walletconnect/solana-adapter-core": "workspace: *",
+		"bs58": "5.0.0",
+		"buffer": "^6.0.3",
 		"react": "^18.3.1",
-		"react-dom": "^18.3.1"
+		"react-dom": "^18.3.1",
+		"react-hot-toast": "^2.4.1"
 	},
 	"devDependencies": {
 		"@types/react": "^18.3.3",

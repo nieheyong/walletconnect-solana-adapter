@@ -67,8 +67,8 @@ export class WalletConnectWallet {
 	}
 
 	async connect(): Promise<WalletConnectWalletInit> {
-		if(!this._client){
-			await new Promise((res)=>{
+		if (!this._client) {
+			await new Promise((res) => {
 				this._ConnectQueueResolver = res
 			})
 		}
@@ -210,8 +210,8 @@ export class WalletConnectWallet {
 		}
 	}
 
-	async initClient(options: SignClientTypes.Options){
+	async initClient(options: SignClientTypes.Options) {
 		this._client = await WalletConnectClient.init(options)
-		if(this._ConnectQueueResolver) this._ConnectQueueResolver(true)
+		if (this._ConnectQueueResolver) this._ConnectQueueResolver(true)
 	}
 }
