@@ -1,43 +1,36 @@
 {
-    "name": "@jnwng/walletconnect-solana",
-    "version": "0.2.0",
-    "license": "Apache-2.0",
-    "type": "module",
-    "sideEffects": false,
-    "main": "./lib/cjs/index.js",
-    "module": "./lib/esm/index.js",
-    "types": "./lib/types/index.d.ts",
-    "exports": {
-        "import": "./lib/esm/index.js",
-        "require": "./lib/cjs/index.js",
-        "types": "./lib/types/index.d.ts"
-    },
-    "files": [
-        "lib",
-        "src",
-        "LICENSE"
-    ],
-    "publishConfig": {
-        "access": "public"
-    },
-    "scripts": {
-        "clean": "shx mkdir -p lib && shx rm -rf lib",
-        "package": "shx echo '{ \"type\": \"commonjs\" }' > lib/cjs/package.json"
-    },
-    "devDependencies": {
-        "@solana/web3.js": "^1.78.0",
-        "@types/node-fetch": "^2.6.2",
-        "@types/pino": "6.3.11",
-        "@walletconnect/types": "2.10.6",
-        "shx": "^0.3.4"
-    },
-    "dependencies": {
-        "@walletconnect/modal": "^2.6.2",
-        "@walletconnect/sign-client": "^2.10.6",
-        "@walletconnect/utils": "^2.10.6",
-        "bs58": "^5.0.0"
-    },
-    "peerDependencies": {
-        "@solana/web3.js": "^1.63.0"
-    }
+	"name": "@walletconnect/solana-adapter-core",
+	"version": "0.0.0",
+	"license": "Apache-2.0",
+	"type": "module",
+	"sideEffects": false,
+	"main": "./dist/index.js",
+	"types": "./dist/types/index.d.ts",
+	"exports": {
+		"import": "./dist/index.js",
+		"types": "./dist/types/index.d.ts"
+	},
+	"files": ["dist", "src", "LICENSE"],
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"clean": "rm -rf dist",
+		"watch": "tsc --watch",
+		"build": "pnpm run clean && tsc"
+	},
+	"devDependencies": {
+		"@solana/web3.js": "^1.78.0",
+		"@walletconnect/types": "2.13.3",
+		"typescript": "^5.5.2"
+	},
+	"dependencies": {
+		"@walletconnect/modal": "2.6.2",
+		"@walletconnect/sign-client": "2.13.3",
+		"@walletconnect/utils": "2.13.3",
+		"bs58": "5.0.0"
+	},
+	"peerDependencies": {
+		"@solana/web3.js": "^1.63.0"
+	}
 }
