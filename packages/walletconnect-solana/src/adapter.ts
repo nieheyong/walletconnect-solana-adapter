@@ -5,15 +5,18 @@ import type { EngineTypes, SessionTypes, SignClientTypes } from '@walletconnect/
 import { getSdkError, parseAccountId } from '@walletconnect/utils';
 import base58 from 'bs58';
 import { ClientNotInitializedError, QRCodeModalError } from './errors.js';
+import { getChainsFromChainId } from './utils/chainIdPatch.js';
 
 export interface WalletConnectWalletAdapterConfig {
     network: WalletConnectChainID;
-    options: SignClientTypes.Options;
+    options: Required<Pick<SignClientTypes.Options, 'projectId'>> & Omit<SignClientTypes.Options, 'projectId'>;
 }
 
 export enum WalletConnectChainID {
-    Mainnet = 'solana:4sGjMW1sUnHzSxGspuhpqLDx6wiyjNtZ',
-    Devnet = 'solana:8E9rvCKLFQia2Y35HXjjpWzj8weVo44K',
+    Mainnet = 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
+    Devnet = 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
+    Deprecated_Mainnet = 'solana:4sGjMW1sUnHzSxGspuhpqLDx6wiyjNtZ',
+    Deprecated_Devnet = 'solana:8E9rvCKLFQia2Y35HXjjpWzj8weVo44K',
 }
 
 export enum WalletConnectRPCMethods {
@@ -25,42 +28,48 @@ interface WalletConnectWalletInit {
     publicKey: PublicKey;
 }
 
-const getConnectParams = (chainId: WalletConnectChainID): EngineTypes.FindParams => ({
-    requiredNamespaces: {
-        solana: {
-            chains: [chainId],
-            methods: [WalletConnectRPCMethods.signTransaction, WalletConnectRPCMethods.signMessage],
-            events: [],
+const getConnectParams = (chainId: WalletConnectChainID): EngineTypes.ConnectParams => {
+    /** Workaround to support old chain Id configuration */
+    const chains = getChainsFromChainId(chainId);
+    
+    return {
+        optionalNamespaces: {
+            solana: {
+                chains,
+                methods: [WalletConnectRPCMethods.signTransaction, WalletConnectRPCMethods.signMessage],
+                events: [],
+            },
         },
-    },
-});
+    }
+};
 
 const isVersionedTransaction = (transaction: Transaction | VersionedTransaction): transaction is VersionedTransaction =>
     'version' in transaction;
 
-export class WalletConnectWallet {
+export class WalletConnectAdapter {
     private _client: WalletConnectClient | undefined;
     private _session: SessionTypes.Struct | undefined;
     private _modal: WalletConnectModal;
     private readonly _network: WalletConnectChainID;
-    private readonly _options: SignClientTypes.Options;
+    private readonly _options: WalletConnectWalletAdapterConfig['options'];
 
     constructor(config: WalletConnectWalletAdapterConfig) {
         this._options = config.options;
         this._network = config.network;
 
         this._modal = new WalletConnectModal({
-            projectId: this._options.projectId!,
+            projectId: this._options.projectId,
             chains: [this._network],
         });
     }
 
     async connect(): Promise<WalletConnectWalletInit> {
         const client = this._client ?? (await WalletConnectClient.init(this._options));
-        const sessions = client.find(getConnectParams(this._network)).filter((s) => s.acknowledged);
-        if (sessions.length) {
+        console.log("Client", client, "session: ", client.session, "length?: ", client.session.length)
+
+        if (client.session.length) {
             // select last matching session
-            this._session = sessions[sessions.length - 1];
+            this._session = client.session.get('1');
             // We assign this variable only after we're sure we've received approval
             this._client = client;
 

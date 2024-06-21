@@ -57,16 +57,3 @@ pnpm watch
 ```
 
 Other packages can build and run with their own tools (like CRA's react-scripts commands).
-
-## Run (with HMR)
-
-Run this in a separate terminal from the `watch` command.
-
-```shell
-cd packages/app/create-react-app
-pnpm start
-```
-
-A basic CRA app will now be running. Go change the file [`packages/walletconnect-solana/src/helloWorld.ts`](./packages/walletconnect-solana/src/helloWorld.ts). This file is used by the file [`packages/ui/react/src/HelloWorld.tsx`](./packages/ui/react/src/HelloWorld.tsx), which is used by the CRA app.
-
-Change the string `'Hello, world!'` to some other string, and save the file. The CRA app should update automatically, reflecting this deeply nested change.
