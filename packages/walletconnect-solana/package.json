@@ -1,5 +1,5 @@
 {
-	"name": "@walletconnect/solana-adapter-core",
+	"name": "@walletconnect/wallet-adapter",
 	"version": "0.0.0",
 	"license": "Apache-2.0",
 	"type": "module",
@@ -10,7 +10,11 @@
 		"import": "./dist/index.js",
 		"types": "./dist/types/index.d.ts"
 	},
-	"files": ["dist", "src", "LICENSE"],
+	"files": [
+		"dist",
+		"src",
+		"LICENSE"
+	],
 	"publishConfig": {
 		"access": "public"
 	},
@@ -20,6 +24,7 @@
 		"build": "pnpm run clean && tsc"
 	},
 	"devDependencies": {
+		"@solana/wallet-adapter-base": "^0.9.23",
 		"@solana/web3.js": "^1.78.0",
 		"@walletconnect/types": "2.13.3",
 		"typescript": "^5.5.2"
@@ -31,6 +36,7 @@
 		"bs58": "5.0.0"
 	},
 	"peerDependencies": {
-		"@solana/web3.js": "^1.63.0"
+		"@solana/web3.js": ">=1.0.0 >2.0.0",
+		"@solana/wallet-adapter-base": ">=0.0.0 >1.0.0"
 	}
 }
