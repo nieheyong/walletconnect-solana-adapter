@@ -78,7 +78,7 @@ export class WalletConnectWalletAdapter extends BaseSignerWalletAdapter {
       this._wallet.client.on('session_delete', this._disconnected)
 		} catch (error: unknown) {
       if ((error as Error).constructor.name === 'QRCodeModalError') throw new WalletWindowClosedError()
-      throw new WalletConnectionError((error as Error)?.message, error)
+      throw error
 		} finally {
 			this._connecting = false
 		}

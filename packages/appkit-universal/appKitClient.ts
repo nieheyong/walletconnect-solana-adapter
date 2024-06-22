@@ -1,0 +1,144 @@
+import type {
+  ConnectionControllerClient,
+  LibraryOptions,
+  NetworkControllerClient,
+} from '@web3modal/scaffold'
+import { Web3ModalScaffold } from '@web3modal/scaffold'
+import { ConstantsUtil, PresetsUtil } from '@web3modal/scaffold-utils'
+import { type ConnectParams, UniversalProvider } from '@walletconnect/universal-provider'
+import { ApiController } from '@web3modal/core'
+// -- Types ---------------------------------------------------------------------
+
+export type Web3ModalClientOptions = Omit<LibraryOptions, 'defaultChain' | 'tokens' | '_sdkVersion'> & {
+  universalProvider: Awaited<ReturnType<typeof UniversalProvider['init']>>
+  namespaces: Exclude<ConnectParams['optionalNamespaces'], undefined>
+  chainImages?: Record<number | string, string>
+}
+
+export type Web3ModalOptions = Omit<Web3ModalClientOptions, '_sdkVersion'>
+
+// -- Client --------------------------------------------------------------------
+export class WalletConnectModal extends Web3ModalScaffold {
+  private hasSyncedConnectedAccount = false
+  private options: Web3ModalClientOptions | undefined = undefined
+  private universalProvider: Awaited<ReturnType<typeof UniversalProvider['init']>>
+  private requestedScope: string
+  private requestedNamespaces: Exclude<ConnectParams['optionalNamespaces'], undefined>
+
+  public constructor(options: Web3ModalClientOptions) {
+    const { universalProvider, namespaces, ...w3mOptions } = options
+    
+    if (!universalProvider) {
+      throw new Error('web3modal:constructor - universalProvider is undefined')
+    }
+    
+    if (!w3mOptions.projectId) {
+      throw new Error('web3modal:constructor - projectId is undefined')
+    }
+    
+    const networkControllerClient: NetworkControllerClient = {
+      switchCaipNetwork: async caipNetwork => {
+        if (caipNetwork) {
+          this.universalProvider.setDefaultChain(caipNetwork.id)
+        }
+      },
+
+      //@ts-ignore - doesn't need to be async
+      getApprovedCaipNetworksData: () =>{
+        //@ts-ignore
+        const accounts = this.universalProvider?.session?.namespaces[this.requestedScope].accounts
+        const chains = accounts?.map((account) => `${this.requestedScope}:` + account.split(':')[1])
+      
+          return {
+            supportsAllNetworks: false,
+            approvedCaipNetworkIds: chains
+          }
+        }
+    }
+
+    //@ts-ignore no signMessage here...
+    const connectionControllerClient: ConnectionControllerClient = {
+      connectWalletConnect: async onUri => {
+
+        this.universalProvider.events.on('display_uri', onUri)
+
+        await this.universalProvider.connect({ optionalNamespaces: this.requestedNamespaces })
+        this.syncAccount()
+      },
+
+      disconnect: async () => {
+        await this.universalProvider.disconnect()
+      },
+    }
+
+    super({
+      networkControllerClient,
+      connectionControllerClient,
+      featuredWalletIds: [],
+      allowUnsupportedChain: true,
+      //@ts-ignore version type
+      _sdkVersion: `universal-appkit-${ConstantsUtil.VERSION}`,
+      ...({
+        enableOnramp: false,
+        ...w3mOptions
+      })
+    })
+
+    this.options = options
+    this.requestedScope = Object.keys(namespaces)[0]
+    this.requestedNamespaces = namespaces
+    this.universalProvider = universalProvider
+    const id = 'walletConnect'
+    this.setConnectors([{
+      id,
+      explorerId: PresetsUtil.ConnectorExplorerIds[id],
+      name: PresetsUtil.ConnectorNamesMap[id],
+      imageId: PresetsUtil.ConnectorImageIds[id],
+      type: PresetsUtil.ConnectorTypesMap[id],
+      info: {
+        rdns: id
+      }
+    }])
+    this.syncAccount()
+    this.syncNetwork()
+    universalProvider.client.on('session_update', this.syncAccount)
+    universalProvider.client.on('session_delete', this.syncAccount)
+  }
+
+  // -- Private -----------------------------------------------------------------
+
+  private async syncAccount() {
+    this.resetAccount()
+
+    const session = this.universalProvider.session
+    if (session) {
+      const connectedScope = Object.keys(session.namespaces)[0]
+      const chainId = session.namespaces?.[connectedScope]?.accounts[0].split(':')[1]
+      this.setIsConnected(true)
+      this.setCaipAddress(session.namespaces?.[connectedScope]?.accounts[0] as `${string}:${string}:${string}`)
+      this.getApprovedCaipNetworksData()
+      this.setCaipNetwork({
+        id: connectedScope + chainId as `${string}:${string}`,
+        name: connectedScope,
+        imageId: PresetsUtil.EIP155NetworkImageIds[chainId],
+        imageUrl: this.options?.chainImages?.[chainId]
+      })
+      this.hasSyncedConnectedAccount = true
+    } else if (this.hasSyncedConnectedAccount) {
+      this.resetWcConnection()
+      this.resetNetwork()
+    }
+  }
+
+  private syncNetwork(){
+    const chainId = this.requestedNamespaces[this.requestedScope].chains[0]
+    console.log(chainId)
+    this.setCaipNetwork({
+      id: chainId as `${string}:${string}`,
+      name: this.requestedScope,
+      imageId: PresetsUtil.EIP155NetworkImageIds[chainId],
+      imageUrl: this.options?.chainImages?.[chainId]
+    })
+    ApiController.reFetchWallets()
+  }
+}

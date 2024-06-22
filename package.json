@@ -6,8 +6,8 @@
 		"preinstall": "npx only-allow pnpm",
 		"format": "pnpm dlx @biomejs/biome format . --write",
 		"build": "pnpm run build:package && pnpm run build:playground",
-		"watch:package": "pnpm --filter ./packages/walletconnect-solana run watch",
-		"build:package": "pnpm --filter ./packages/walletconnect-solana run build",
+		"watch:package": "pnpm --filter ./packages/** --parallel run watch",
+		"build:package": "pnpm --filter ./packages/** run build",
 		"build:playground": "pnpm --filter ./playground run build",
 		"dev:playground": "pnpm --filter ./playground run dev"
 	},

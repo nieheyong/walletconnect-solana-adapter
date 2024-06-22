@@ -10,7 +10,7 @@ import { WalletConnectWalletAdapter } from '@walletconnect/wallet-adapter'
 
 export const SolanaContext = ({ children }: { children: ReactNode }) => {
 	// The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
-	const network = WalletAdapterNetwork.Devnet
+	const network = WalletAdapterNetwork.Mainnet
 
 	// You can also provide a custom RPC endpoint.
 	const endpoint = useMemo(() => clusterApiUrl(network), [network])
@@ -18,7 +18,7 @@ export const SolanaContext = ({ children }: { children: ReactNode }) => {
 	const wallets = useMemo(
 		() => [
 			new WalletConnectWalletAdapter({
-				network: WalletAdapterNetwork.Devnet,
+				network: WalletAdapterNetwork.Mainnet,
 				options: {
 					projectId: 'bd4997ce3ede37c95770ba10a3804dad',
 				},

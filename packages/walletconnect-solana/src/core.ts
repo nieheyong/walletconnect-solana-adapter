@@ -1,11 +1,12 @@
 import { Transaction, VersionedTransaction, PublicKey } from '@solana/web3.js'
-import type { WalletConnectModal } from '@walletconnect/modal'
-import WalletConnectClient from '@walletconnect/sign-client'
+import type { WalletConnectModal } from '@web3modal/universal'
+import UniversalProvider, { type ConnectParams } from '@walletconnect/universal-provider'
 import type { EngineTypes, SessionTypes, SignClientTypes } from '@walletconnect/types'
 import { getSdkError, parseAccountId } from '@walletconnect/utils'
 import base58 from 'bs58'
 import { ClientNotInitializedError, QRCodeModalError } from './errors.js'
 import { getChainsFromChainId, getDefaultChainFromSession } from './utils/chainIdPatch.js'
+import { WalletConnectionError } from '@solana/wallet-adapter-base'
 
 export interface WalletConnectWalletAdapterConfig {
 	network: WalletConnectChainID
@@ -28,7 +29,7 @@ interface WalletConnectWalletInit {
 	publicKey: PublicKey
 }
 
-const getConnectParams = (chainId: WalletConnectChainID): EngineTypes.ConnectParams => {
+const getConnectParams = (chainId: WalletConnectChainID): ConnectParams => {
 	/** Workaround to support old chain Id configuration */
 	const chains = getChainsFromChainId(chainId)
 
@@ -47,7 +48,7 @@ const isVersionedTransaction = (transaction: Transaction | VersionedTransaction)
 	'version' in transaction
 
 export class WalletConnectWallet {
-	private _client: WalletConnectClient | undefined
+	private _UniversalProvider: UniversalProvider | undefined
 	private _session: SessionTypes.Struct | undefined
 	private _modal: WalletConnectModal | undefined
 	private _projectId: string
@@ -65,75 +66,63 @@ export class WalletConnectWallet {
 	}
 
 	async connect(): Promise<WalletConnectWalletInit> {
-		if (!this._client) {
+		if (!this._UniversalProvider) {
 			await new Promise((res) => {
 				this._ConnectQueueResolver = res
 			})
 		}
-		// Lazy load the modal
-		await this.initModal()
+		if(!this._UniversalProvider){
+			throw new Error("WalletConnect Adapter - Universal Provider was undefined while calling 'connect()'")
+		}
 
-		if (this.client.session.length) {
-			// select last matching session
-			const lastKeyIndex = this.client.session.keys.length - 1
-			this._session = this.client.session.get(this.client.session.keys[lastKeyIndex])
-
+		if (this._UniversalProvider.session) {
+			this._session = this._UniversalProvider.session
 			const defaultNetwork = getDefaultChainFromSession(this._session, this._network) as WalletConnectChainID
 			this._network = defaultNetwork
+			this._UniversalProvider.setDefaultChain(defaultNetwork)
 			return {
 				publicKey: this.publicKey,
 			}
 		} else {
-			const { uri, approval } = await this.client.connect(getConnectParams(this._network))
-			return new Promise((resolve, reject) => {
-				if(!this._modal){
-					throw Error("WalletConnect Adapter - Modal was not initialized")
-				}
-				this._modal.subscribeModal((state) => {
-					// the modal was closed so reject the promise
-					if (!state.open && !this._session) {
-						reject(new Error('Connection request reset. Please try again.'))
-					}
+			try{
+				// Lazy load the modal
+				await this.initModal()
+				this._modal?.open()
+				const session: SessionTypes.Struct | undefined = await new Promise((res)=>{
+					this._modal?.subscribeState(({ open })=>{
+						if(!open){
+							res(this._UniversalProvider?.session)
+						}
+					})
 				})
-
-				if (uri) {
-					this._modal.openModal({ uri }).catch(() => {
-						reject(new QRCodeModalError())
-					})
+				this._session = session
+				if(!session){
+					throw new WalletConnectionError()
 				}
+				const defaultNetwork = getDefaultChainFromSession(session, this._network) as WalletConnectChainID
+				this._network = defaultNetwork
+				this._UniversalProvider?.setDefaultChain(defaultNetwork)
 
-				approval()
-					.then((session) => {
-						this._session = session
-
-						const defaultNetwork = getDefaultChainFromSession(this._session, this._network) as WalletConnectChainID
-						this._network = defaultNetwork
-						resolve({ publicKey: this.publicKey })
-					})
-					.catch(reject)
-					.finally(() => {
-						this._modal?.closeModal()
-					})
-			})
+				return { publicKey: this.publicKey }
+			}catch (error: unknown){
+				throw error
+			}
 		}
 	}
 
 	async disconnect() {
-		if (this._client && this._session) {
-			await this._client.disconnect({
-				topic: this._session.topic,
-				reason: getSdkError('USER_DISCONNECTED'),
-			})
+		if (this._UniversalProvider?.session) {
+			await this._UniversalProvider.disconnect()
 			this._session = undefined
 		} else {
 			throw new ClientNotInitializedError()
 		}
 	}
 
-	get client(): WalletConnectClient {
-		if (this._client) {
+	get client(): UniversalProvider {
+		if (this._UniversalProvider) {
 			// TODO: using client.off throws an error
-			return Object.assign({}, this._client, { off: this._client.removeListener })
+			return this._UniversalProvider
 			// return this._client;
 		} else {
 			throw new ClientNotInitializedError()
@@ -141,8 +130,9 @@ export class WalletConnectWallet {
 	}
 
 	get publicKey(): PublicKey {
-		if (this._client && this._session) {
+		if (this._UniversalProvider?.session && this._session) {
 			const { address } = parseAccountId(this._session.namespaces.solana.accounts[0])
+
 			return new PublicKey(address)
 		} else {
 			throw new ClientNotInitializedError()
@@ -150,7 +140,7 @@ export class WalletConnectWallet {
 	}
 
 	async signTransaction<T extends Transaction | VersionedTransaction>(transaction: T): Promise<T> {
-		if (this._client && this._session) {
+		if (this._UniversalProvider?.session && this._session) {
 			let rawTransaction: string
 			let legacyTransaction: Transaction | VersionedTransaction | undefined
 
@@ -172,7 +162,7 @@ export class WalletConnectWallet {
 				legacyTransaction = transaction
 			}
 
-			const { signature } = await this._client.request<{ signature: string }>({
+			const { signature } = await this._UniversalProvider.client.request<{ signature: string }>({
 				chainId: this._network,
 				topic: this._session.topic,
 				request: {
@@ -196,8 +186,8 @@ export class WalletConnectWallet {
 	}
 
 	async signMessage(message: Uint8Array): Promise<Uint8Array> {
-		if (this._client && this._session) {
-			const { signature } = await this._client.request<{ signature: string }>({
+		if (this._UniversalProvider?.session && this._session) {
+			const { signature } = await this._UniversalProvider.client.request<{ signature: string }>({
 				// The network does not change the output of message signing, but this is a required parameter for SignClient
 				chainId: this._network,
 				topic: this._session.topic,
@@ -214,18 +204,21 @@ export class WalletConnectWallet {
 	}
 
 	async initClient(options: SignClientTypes.Options) {
-		this._client = await WalletConnectClient.init(options)
-		if (this._ConnectQueueResolver) this._ConnectQueueResolver(true)
+		const provider = await UniversalProvider.init(options)
+		this._UniversalProvider = provider
+		if(this._ConnectQueueResolver) this._ConnectQueueResolver(true)
 	}
 
 	async initModal(){
 		if(this._modal) return
-		
-		const { WalletConnectModal } = await import('@walletconnect/modal')
-		
-		this._modal = new WalletConnectModal({
-			projectId: this._projectId,
-			chains: [this._network],
-		})
-	}
+		if(!this._UniversalProvider) throw new Error("WalletConnect Adapter - cannot init modal when Universal Provider is undefined")
+			
+			const { WalletConnectModal } = await import('@web3modal/universal')
+			
+			this._modal = new WalletConnectModal({
+				projectId: this._projectId,
+				universalProvider: this._UniversalProvider,
+				namespaces: getConnectParams(this._network).optionalNamespaces as Exclude<ConnectParams['optionalNamespaces'], undefined>
+			})
+		}
 }
