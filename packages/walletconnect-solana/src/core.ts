@@ -87,8 +87,7 @@ export class WalletConnectWallet {
 			try{
 				// Lazy load the modal
 				await this.initModal()
-				//@ts-ignore
-				this._modal?.open({ view: 'AllWallets' })
+				this._modal?.open()
 				const session: SessionTypes.Struct | undefined = await new Promise((res)=>{
 					this._modal?.subscribeState(({ open })=>{
 						if(!open){

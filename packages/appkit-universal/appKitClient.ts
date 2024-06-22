@@ -132,7 +132,6 @@ export class WalletConnectModal extends Web3ModalScaffold {
 
   private syncNetwork(){
     const chainId = this.requestedNamespaces[this.requestedScope].chains[0]
-    console.log(chainId)
     this.setCaipNetwork({
       id: chainId as `${string}:${string}`,
       name: this.requestedScope,
