@@ -7,7 +7,7 @@
 		"format": "pnpm dlx @biomejs/biome format . --write",
 		"build": "pnpm run build:package && pnpm run build:playground",
 		"watch:package": "pnpm --filter ./packages/* --parallel run watch",
-		"build:package": "pnpm --filter ./packages/* run build",
+		"build:package": "pnpm --filter ./packages/** --recursive run build",
 		"clean:package": "pnpm --filter ./packages/* run clean",
 		"build:playground": "pnpm --filter ./playground run build",
 		"dev:playground": "pnpm --filter ./playground run dev"
