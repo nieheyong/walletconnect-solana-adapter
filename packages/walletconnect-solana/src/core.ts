@@ -71,7 +71,7 @@ export class WalletConnectWallet {
 				this._ConnectQueueResolver = res
 			})
 		}
-		if(!this._UniversalProvider){
+		if (!this._UniversalProvider) {
 			throw new Error("WalletConnect Adapter - Universal Provider was undefined while calling 'connect()'")
 		}
 
@@ -84,19 +84,19 @@ export class WalletConnectWallet {
 				publicKey: this.publicKey,
 			}
 		} else {
-			try{
+			try {
 				// Lazy load the modal
 				await this.initModal()
 				this._modal?.open()
-				const session: SessionTypes.Struct | undefined = await new Promise((res)=>{
-					this._modal?.subscribeState(({ open })=>{
-						if(!open){
+				const session: SessionTypes.Struct | undefined = await new Promise((res) => {
+					this._modal?.subscribeState(({ open }) => {
+						if (!open) {
 							res(this._UniversalProvider?.session)
 						}
 					})
 				})
 				this._session = session
-				if(!session){
+				if (!session) {
 					throw new WalletConnectionError()
 				}
 				const defaultNetwork = getDefaultChainFromSession(session, this._network) as WalletConnectChainID
@@ -104,7 +104,7 @@ export class WalletConnectWallet {
 				this._UniversalProvider?.setDefaultChain(defaultNetwork)
 
 				return { publicKey: this.publicKey }
-			}catch (error: unknown){
+			} catch (error: unknown) {
 				throw error
 			}
 		}
@@ -206,19 +206,23 @@ export class WalletConnectWallet {
 	async initClient(options: SignClientTypes.Options) {
 		const provider = await UniversalProvider.init(options)
 		this._UniversalProvider = provider
-		if(this._ConnectQueueResolver) this._ConnectQueueResolver(true)
+		if (this._ConnectQueueResolver) this._ConnectQueueResolver(true)
 	}
 
-	async initModal(){
-		if(this._modal) return
-		if(!this._UniversalProvider) throw new Error("WalletConnect Adapter - cannot init modal when Universal Provider is undefined")
-			
-			const { WalletConnectModal } = await import('@web3modal/universal')
-			
-			this._modal = new WalletConnectModal({
-				projectId: this._projectId,
-				universalProvider: this._UniversalProvider,
-				namespaces: getConnectParams(this._network).optionalNamespaces as Exclude<ConnectParams['optionalNamespaces'], undefined>
-			})
-		}
+	async initModal() {
+		if (this._modal) return
+		if (!this._UniversalProvider)
+			throw new Error('WalletConnect Adapter - cannot init modal when Universal Provider is undefined')
+
+		const { WalletConnectModal } = await import('@web3modal/universal')
+
+		this._modal = new WalletConnectModal({
+			projectId: this._projectId,
+			universalProvider: this._UniversalProvider,
+			namespaces: getConnectParams(this._network).optionalNamespaces as Exclude<
+				ConnectParams['optionalNamespaces'],
+				undefined
+			>,
+		})
+	}
 }

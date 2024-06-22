@@ -1,14 +1,12 @@
 import {
-  WalletConnectChainID,
-  WalletConnectWallet,
+	WalletConnectChainID,
+	WalletConnectWallet,
 	type WalletConnectWalletAdapterConfig as BaseWalletConnectWalletAdapterConfig,
 } from './core.js'
 import type { WalletError, WalletName } from '@solana/wallet-adapter-base'
 import {
 	BaseSignerWalletAdapter,
 	WalletAdapterNetwork,
-	WalletConnectionError,
-	WalletDisconnectedError,
 	WalletDisconnectionError,
 	WalletNotConnectedError,
 	WalletNotReadyError,
@@ -48,7 +46,10 @@ export class WalletConnectWalletAdapter extends BaseSignerWalletAdapter {
 		this._connecting = false
 		this._config = config
 		this._wallet = new WalletConnectWallet({
-			network: this._config.network === WalletAdapterNetwork.Mainnet ? WalletConnectChainID.Mainnet : WalletConnectChainID.Devnet,
+			network:
+				this._config.network === WalletAdapterNetwork.Mainnet
+					? WalletConnectChainID.Mainnet
+					: WalletConnectChainID.Devnet,
 			options: this._config.options,
 		})
 	}
@@ -72,13 +73,13 @@ export class WalletConnectWalletAdapter extends BaseSignerWalletAdapter {
 
 			this._connecting = true
 
-      const { publicKey } = await this._wallet.connect()
-      this._publicKey = publicKey
-      this.emit('connect', publicKey)
-      this._wallet.client.on('session_delete', this._disconnected)
+			const { publicKey } = await this._wallet.connect()
+			this._publicKey = publicKey
+			this.emit('connect', publicKey)
+			this._wallet.client.on('session_delete', this.disconnect)
 		} catch (error: unknown) {
-      if ((error as Error).constructor.name === 'QRCodeModalError') throw new WalletWindowClosedError()
-      throw error
+			if ((error as Error).constructor.name === 'QRCodeModalError') throw new WalletWindowClosedError()
+			throw error
 		} finally {
 			this._connecting = false
 		}
@@ -87,11 +88,13 @@ export class WalletConnectWalletAdapter extends BaseSignerWalletAdapter {
 	async disconnect(): Promise<void> {
 		const wallet = this._wallet
 		if (wallet) {
-			wallet.client.off('session_delete', this._disconnected)
+			wallet.client.off('session_delete', this.disconnect)
 			this._publicKey = null
 
 			try {
-				await wallet.disconnect()
+				if (wallet.client.session) {
+					await wallet.disconnect()
+				}
 			} catch (error: unknown) {
 				this.emit('error', new WalletDisconnectionError((error as Error)?.message, error))
 			}
@@ -129,17 +132,6 @@ export class WalletConnectWalletAdapter extends BaseSignerWalletAdapter {
 		} catch (error: unknown) {
 			this.emit('error', error as WalletError)
 			throw error
-		}
-	}
-
-	private _disconnected = () => {
-		const wallet = this._wallet
-		if (wallet) {
-			wallet.client.off('session_delete', this._disconnected)
-			this._publicKey = null
-
-			this.emit('error', new WalletDisconnectedError())
-			this.emit('disconnect')
 		}
 	}
 }
