@@ -1,5 +1,5 @@
 import { Transaction, VersionedTransaction, PublicKey } from '@solana/web3.js'
-import { WalletConnectModal } from '@walletconnect/modal'
+import type { WalletConnectModal } from '@walletconnect/modal'
 import WalletConnectClient from '@walletconnect/sign-client'
 import type { EngineTypes, SessionTypes, SignClientTypes } from '@walletconnect/types'
 import { getSdkError, parseAccountId } from '@walletconnect/utils'
@@ -49,7 +49,8 @@ const isVersionedTransaction = (transaction: Transaction | VersionedTransaction)
 export class WalletConnectWallet {
 	private _client: WalletConnectClient | undefined
 	private _session: SessionTypes.Struct | undefined
-	private _modal: WalletConnectModal
+	private _modal: WalletConnectModal | undefined
+	private _projectId: string
 	private _network: WalletConnectChainID
 	private _ConnectQueueResolver: ((value: unknown) => void) | undefined
 
@@ -60,10 +61,7 @@ export class WalletConnectWallet {
 		if (!config.options.projectId) {
 			throw Error('WalletConnect Adapter: Project ID is undefined')
 		}
-		this._modal = new WalletConnectModal({
-			projectId: config.options.projectId,
-			chains: [this._network],
-		})
+		this._projectId = config.options.projectId
 	}
 
 	async connect(): Promise<WalletConnectWalletInit> {
@@ -72,6 +70,8 @@ export class WalletConnectWallet {
 				this._ConnectQueueResolver = res
 			})
 		}
+		// Lazy load the modal
+		await this.initModal()
 
 		if (this.client.session.length) {
 			// select last matching session
@@ -86,6 +86,9 @@ export class WalletConnectWallet {
 		} else {
 			const { uri, approval } = await this.client.connect(getConnectParams(this._network))
 			return new Promise((resolve, reject) => {
+				if(!this._modal){
+					throw Error("WalletConnect Adapter - Modal was not initialized")
+				}
 				this._modal.subscribeModal((state) => {
 					// the modal was closed so reject the promise
 					if (!state.open && !this._session) {
@@ -109,7 +112,7 @@ export class WalletConnectWallet {
 					})
 					.catch(reject)
 					.finally(() => {
-						this._modal.closeModal()
+						this._modal?.closeModal()
 					})
 			})
 		}
@@ -213,5 +216,16 @@ export class WalletConnectWallet {
 	async initClient(options: SignClientTypes.Options) {
 		this._client = await WalletConnectClient.init(options)
 		if (this._ConnectQueueResolver) this._ConnectQueueResolver(true)
+	}
+
+	async initModal(){
+		if(this._modal) return
+		
+		const { WalletConnectModal } = await import('@walletconnect/modal')
+		
+		this._modal = new WalletConnectModal({
+			projectId: this._projectId,
+			chains: [this._network],
+		})
 	}
 }
