@@ -17,6 +17,6 @@
 		}
 	},
 	"files": {
-		"include": ["packages/**/*.ts"]
+		"include": ["packages/**/*.ts", "playground/**/*.tsx"]
 	}
 }

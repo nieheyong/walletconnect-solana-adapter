@@ -45,6 +45,7 @@ export class WalletConnectWalletAdapter extends BaseSignerWalletAdapter {
 		this._publicKey = null
 		this._connecting = false
 		this._config = config
+		console.log("WalletConnect Adapter - ", this._config.network)
 		this._wallet = new WalletConnectWallet({
 			network:
 				this._config.network === WalletAdapterNetwork.Mainnet
