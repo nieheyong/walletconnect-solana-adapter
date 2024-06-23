@@ -38,8 +38,8 @@
 		"typescript": "^5.5.2"
 	},
 	"dependencies": {
-		"@walletconnect/modal": "2.6.2",
-		"@walletconnect/sign-client": "2.13.3",
+		"@web3modal/universal": "workspace: *",
+		"@walletconnect/universal-provider": "2.13.3",
 		"@walletconnect/utils": "2.13.3",
 		"bs58": "5.0.0"
 	},

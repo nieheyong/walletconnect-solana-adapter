@@ -13,15 +13,15 @@ function App() {
 		<div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>
 			<WalletMultiButton />
 			<WalletDisconnectButton />
-			<Toaster/>
+			<Toaster />
 
 			{/* Wallet Interaction */}
-			<SignMessage/>
-			<SignTransaction/>
-			<SendTransaction/>
-			<SendV0Transaction/>
-			<SendLegacyTransaction/>
-			<RequestAirdrop/>
+			<SignMessage />
+			<SignTransaction />
+			<SendTransaction />
+			<SendV0Transaction />
+			<SendLegacyTransaction />
+			<RequestAirdrop />
 		</div>
 	)
 }
