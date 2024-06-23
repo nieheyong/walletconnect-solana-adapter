@@ -15,7 +15,7 @@ const toggleNetwork = (network: Networks) =>
 type Networks = WalletAdapterNetwork.Devnet | WalletAdapterNetwork.Mainnet
 
 export const SolanaContext = ({ children }: { children: ReactNode }) => {
-	const [currentNetwork, setCurrentNetwork] = useState<Networks>(WalletAdapterNetwork.Devnet)
+	const [currentNetwork, setCurrentNetwork] = useState<Networks>(WalletAdapterNetwork.Mainnet)
 	// The network can be set to 'devnet', 'testnet', or 'mainnet-beta'.
 
 	// You can also provide a custom RPC endpoint.
