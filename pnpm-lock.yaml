@@ -43,8 +43,8 @@ importers:
   packages/walletconnect-solana:
     dependencies:
       '@walletconnect/solana-adapter-ui':
-        specifier: 'workspace: *'
-        version: link:../appkit-universal
+        specifier: 0.0.0-alpha.2
+        version: 0.0.0-alpha.2(@react-native-async-storage/async-storage@1.23.1)(@walletconnect/universal-provider@2.13.3(@react-native-async-storage/async-storage@1.23.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))
       '@walletconnect/universal-provider':
         specifier: 2.13.3
         version: 2.13.3(@react-native-async-storage/async-storage@1.23.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
@@ -1882,6 +1882,11 @@ packages:
 
   '@walletconnect/sign-client@2.13.3':
     resolution: {integrity: sha512-3Pcq6trHWdBZn5X0VUFQ3zJaaqyEbMW9WNVKcZ2SakIpQAwySd08Mztvq48G98jfucdgP3tjGPbBvzHX9vJX7w==}
+
+  '@walletconnect/solana-adapter-ui@0.0.0-alpha.2':
+    resolution: {integrity: sha512-Hmt6Rk1A4W4mijRwt3/EQbs5ixxPjLGpY4ShqmuvNVp2jDSuoO19qtT9WMZHGDxIbDeKPyNfAePQPAuefZaF3w==}
+    peerDependencies:
+      '@walletconnect/universal-provider': '>=2 >3'
 
   '@walletconnect/time@1.0.2':
     resolution: {integrity: sha512-uzdd9woDcJ1AaBZRhqy5rNC9laqWGErfc4dxA9a87mPdKOgWMD85mcFo9dIYIts/Jwocfwn07EC6EzclKubk/g==}
@@ -6487,6 +6492,33 @@ snapshots:
       - ioredis
       - uWebSockets.js
       - utf-8-validate
+
+  '@walletconnect/solana-adapter-ui@0.0.0-alpha.2(@react-native-async-storage/async-storage@1.23.1)(@walletconnect/universal-provider@2.13.3(@react-native-async-storage/async-storage@1.23.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10))':
+    dependencies:
+      '@walletconnect/universal-provider': 2.13.3(@react-native-async-storage/async-storage@1.23.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      '@web3modal/core': 5.0.2(@types/react@18.3.3)(react@18.3.1)
+      '@web3modal/polyfills': 5.0.2
+      '@web3modal/scaffold': 5.0.2(@react-native-async-storage/async-storage@1.23.1)(@types/react@18.3.3)(react@18.3.1)
+      '@web3modal/scaffold-utils': 5.0.2(@types/react@18.3.3)(react@18.3.1)
+      '@web3modal/siwe': 5.0.2(@react-native-async-storage/async-storage@1.23.1)(@types/react@18.3.3)(react@18.3.1)
+      bs58: 5.0.0
+    transitivePeerDependencies:
+      - '@azure/app-configuration'
+      - '@azure/cosmos'
+      - '@azure/data-tables'
+      - '@azure/identity'
+      - '@azure/keyvault-secrets'
+      - '@azure/storage-blob'
+      - '@capacitor/preferences'
+      - '@netlify/blobs'
+      - '@planetscale/database'
+      - '@react-native-async-storage/async-storage'
+      - '@types/react'
+      - '@upstash/redis'
+      - '@vercel/kv'
+      - ioredis
+      - react
+      - uWebSockets.js
 
   '@walletconnect/time@1.0.2':
     dependencies:
