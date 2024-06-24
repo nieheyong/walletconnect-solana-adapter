@@ -8,7 +8,7 @@
 		"clean": "rm -rf node_modules pnpm-lock.yaml; pnpm -r exec rm -rf node_modules dist",
 		"build": "pnpm run build:packages && pnpm run build:playground",
 		"watch:packages": "pnpm -F './packages/**' --parallel run watch",
-		"build:packages": "pnpm run clean; pnpm -F './packages/**' run build",
+		"build:packages": "pnpm run clean:packages; pnpm -F './packages/**' run build",
 		"clean:packages": "pnpm -F './packages/**' exec rm -rf dist",
 		"build:playground": "pnpm -F ./playground run build",
 		"dev:playground": "pnpm -F ./playground run dev",
