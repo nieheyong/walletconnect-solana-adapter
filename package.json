@@ -15,10 +15,10 @@
 		"prerelease": "pnpm -F './packages/**' exec pnpm version prerelease",
 		"add:alpha": "pnpm -F './packages/**' exec pnpm version prerelease --preid alpha",
 		"add:beta": "pnpm -F './packages/**' exec pnpm version prerelease --preid beta",
-		"release": "pnpm run build:packages && pnpm publish",
-		"release:alpha": "pnpm run build:packages && pnpm publish --tag alpha",
-		"release:beta": "pnpm run build:packages && pnpm publish --tag beta",
-		"release:canary": "pnpm run build:packages && pnpm publish --tag canary"
+		"release": "pnpm run build:packages && pnpm -F './packages/**' publish",
+		"release:alpha": "pnpm run build:packages && pnpm -F './packages/**' publish --tag alpha",
+		"release:beta": "pnpm run build:packages && pnpm -F './packages/**' publish --tag beta",
+		"release:canary": "pnpm run build:packages && pnpm -F './packages/**' publish --tag canary"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.8.2"
