@@ -1,6 +1,6 @@
 {
-	"name": "@web3modal/universal",
-	"version": "0.0.0",
+	"name": "@walletconnect/solana-adapter-ui",
+	"version": "0.0.0-alpha.1",
 	"license": "Apache-2.0",
 	"type": "module",
 	"main": "./dist/appKitClient.js",

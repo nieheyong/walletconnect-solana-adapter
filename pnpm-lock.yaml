@@ -42,15 +42,15 @@ importers:
 
   packages/walletconnect-solana:
     dependencies:
+      '@walletconnect/solana-adapter-ui':
+        specifier: 'workspace: *'
+        version: link:../appkit-universal
       '@walletconnect/universal-provider':
         specifier: 2.13.3
         version: 2.13.3(@react-native-async-storage/async-storage@1.23.1)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@walletconnect/utils':
         specifier: 2.13.3
         version: 2.13.3(@react-native-async-storage/async-storage@1.23.1)
-      '@web3modal/universal':
-        specifier: 'workspace: *'
-        version: link:../appkit-universal
       bs58:
         specifier: 5.0.0
         version: 5.0.0
@@ -88,7 +88,7 @@ importers:
       '@solana/web3.js':
         specifier: ^1.78.0
         version: 1.93.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@walletconnect/wallet-adapter':
+      '@walletconnect/solana-adapter':
         specifier: 'workspace: *'
         version: link:../packages/walletconnect-solana
       bs58:
