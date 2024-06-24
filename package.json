@@ -1,16 +1,24 @@
 {
-	"engines": {
-		"node": ">=16"
-	},
 	"scripts": {
 		"preinstall": "npx only-allow pnpm",
 		"format": "pnpm dlx @biomejs/biome format . --write",
+		"clean": "rm -rf node_modules pnpm-lock.yaml; pnpm -r exec rm -rf node_modules dist",
 		"build": "pnpm run build:packages && pnpm run build:playground",
-		"watch:packages": "pnpm --filter ./packages/* --parallel run watch",
-		"build:packages": "pnpm --filter ./packages/appkit-universal run build; pnpm --filter ./packages/walletconnect-solana run build",
-		"clean:packages": "pnpm --filter ./packages/* run clean",
-		"build:playground": "pnpm --filter ./playground run build",
-		"dev:playground": "pnpm --filter ./playground run dev"
+		"watch:packages": "pnpm -F './packages/**' --parallel run watch",
+		"build:packages": "pnpm run clean:packages; pnpm -F './packages/**' run build",
+		"clean:packages": "pnpm -F './packages/**' exec rm -rf dist",
+		"build:playground": "pnpm -F ./playground run build",
+		"dev:playground": "pnpm -F ./playground run dev",
+		"patch": "pnpm -F './packages/**' exec pnpm version patch",
+		"minor": "pnpm -F './packages/**' exec pnpm version minor",
+		"major": "pnpm -F './packages/**' exec pnpm version major",
+		"prerelease": "pnpm -F './packages/**' exec pnpm version prerelease",
+		"add:alpha": "pnpm -F './packages/**' exec pnpm version prerelease --preid alpha",
+		"add:beta": "pnpm -F './packages/**' exec pnpm version prerelease --preid beta",
+		"release": "pnpm run build:packages && pnpm -F './packages/**' publish",
+		"release:alpha": "pnpm run build:packages && pnpm -F './packages/**' publish --tag alpha",
+		"release:beta": "pnpm run build:packages && pnpm -F './packages/**' publish --tag beta",
+		"release:canary": "pnpm run build:packages && pnpm -F './packages/**' publish --tag canary"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.8.2"
