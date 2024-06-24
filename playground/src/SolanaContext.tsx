@@ -7,7 +7,7 @@ import { clusterApiUrl } from '@solana/web3.js'
 
 // Default styles that can be overridden by your app
 import '@solana/wallet-adapter-react-ui/styles.css'
-import { WalletConnectWalletAdapter } from '@walletconnect/wallet-adapter'
+import { WalletConnectWalletAdapter } from '@walletconnect/solana-adapter'
 
 const toggleNetwork = (network: Networks) =>
 	network === WalletAdapterNetwork.Devnet ? WalletAdapterNetwork.Mainnet : WalletAdapterNetwork.Devnet
