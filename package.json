@@ -1,7 +1,4 @@
 {
-	"engines": {
-		"node": ">=16"
-	},
 	"scripts": {
 		"preinstall": "npx only-allow pnpm",
 		"format": "pnpm dlx @biomejs/biome format . --write",
@@ -15,6 +12,9 @@
 		"patch": "pnpm -F './packages/**' exec pnpm version patch",
 		"minor": "pnpm -F './packages/**' exec pnpm version minor",
 		"major": "pnpm -F './packages/**' exec pnpm version major",
+		"prerelease": "pnpm -F './packages/**' exec pnpm version prerelease",
+		"add:alpha": "pnpm -F './packages/**' exec pnpm version prerelease --preid alpha",
+		"add:beta": "pnpm -F './packages/**' exec pnpm version prerelease --preid beta",
 		"release": "pnpm run build:packages && pnpm publish",
 		"release:alpha": "pnpm run build:packages && pnpm publish --tag alpha",
 		"release:beta": "pnpm run build:packages && pnpm publish --tag beta",
