@@ -6,7 +6,7 @@
 		"preinstall": "npx only-allow pnpm",
 		"format": "pnpm dlx @biomejs/biome format . --write",
 		"build": "pnpm run build:packages && pnpm run build:playground",
-		"watch:packages": "pnpm --filter ./packages/* --parallel run watch",
+		"watch:packages": "pnpm --filter ./packages/appkit-universal --filter ./packages/walletconnect-solana --parallel run watch",
 		"build:packages": "pnpm --filter ./packages/appkit-universal run build; pnpm --filter ./packages/walletconnect-solana run build",
 		"clean:packages": "pnpm --filter ./packages/* run clean",
 		"build:playground": "pnpm --filter ./playground run build",
