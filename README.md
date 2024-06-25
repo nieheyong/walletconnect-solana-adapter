@@ -36,7 +36,7 @@ pnpm run <tag>
 
 2. Bump a `patch` / `minor` / `major` / `prerelease`
 
-prerelease will bump `alpha` or `beta` releases (e.g. from `v0.1.1-alpha.0` -> `v0.1.1-alpha.0`).
+prerelease will bump `alpha` or `beta` releases (e.g. from `v0.1.1-alpha.0` -> `v0.1.1-alpha.1`).
 
 ```sh
 pnpm run <replace-with-version> 

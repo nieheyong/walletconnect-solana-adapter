@@ -113,7 +113,7 @@ export class WalletConnectWallet {
 
 	async disconnect() {
 		if (this._UniversalProvider?.session) {
-			await this._UniversalProvider.disconnect()
+			await this._modal?.disconnect()
 			this._session = undefined
 		} else {
 			throw new ClientNotInitializedError()

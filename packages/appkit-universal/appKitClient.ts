@@ -58,11 +58,13 @@ export class WalletConnectModal extends Web3ModalScaffold {
 				this.universalProvider.events.on('display_uri', onUri)
 
 				await this.universalProvider.connect({ optionalNamespaces: this.requestedNamespaces })
+				this.universalProvider.removeListener('display_uri', onUri)
 				this.syncAccount()
 			},
 
 			disconnect: async () => {
 				await this.universalProvider.disconnect()
+				this.syncAccount()
 			},
 		}
 
@@ -100,6 +102,12 @@ export class WalletConnectModal extends Web3ModalScaffold {
 		this.syncNetwork()
 		universalProvider.client.on('session_update', this.syncAccount)
 		universalProvider.client.on('session_delete', this.syncAccount)
+	}
+
+	
+	async disconnect(){
+		await this.universalProvider.disconnect()
+		this.syncAccount()
 	}
 
 	// -- Private -----------------------------------------------------------------
