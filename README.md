@@ -11,7 +11,7 @@ pnpm install
 2. Build!
 
 ```sh
-pnpm run build:package
+pnpm run build:packages
 ```
 
 3. Run!
@@ -26,15 +26,42 @@ Most Mobile wallets don't support Testnet/Devnet. Either change the network to M
 
 ## How to make a release?
 
-1. Build the package
+1. Add a beta or alpha prefix (if needed):
+
+replace `<tag>` with `alpha` or `beta`.
 
 ```sh
-pnpm run build:package
+pnpm run <tag>
 ```
 
-2. Release
+2. Bump a `patch` / `minor` / `major` / `prerelease`
+
+prerelease will bump `alpha` or `beta` releases (e.g. from `v0.1.1-alpha.0` -> `v0.1.1-alpha.0`).
 
 ```sh
-cd plackages/walletconnect-solana
-npm publish --access public
+pnpm run <replace-with-version> 
+```
+
+- example:
+
+```sh
+pnpm run patch
+```
+
+3. Publish
+
+```sh
+pnpm run release
+```
+
+for `alpha` or `beta` releases use:
+
+```sh
+pnpm run release:<tag>
+```
+
+- example:
+
+```sh
+pnpm run release:alpha
 ```
