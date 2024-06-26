@@ -89,14 +89,16 @@ export class WalletConnectWallet {
 				await this.initModal()
 				//@ts-ignore AllWallets view type missing.
 				this._modal?.open({ view: 'AllWallets' })
+				let unsubscribeFromModalState: (() => void) | undefined
 				const session: SessionTypes.Struct | undefined = await new Promise((res) => {
-					this._modal?.subscribeState(({ open }) => {
+					unsubscribeFromModalState = this._modal?.subscribeState(({ open }) => {
 						if (!open) {
 							res(this._UniversalProvider?.session)
 						}
 					})
 				})
 				this._session = session
+				unsubscribeFromModalState?.()
 				if (!session) {
 					throw new WalletConnectionError()
 				}
@@ -113,7 +115,10 @@ export class WalletConnectWallet {
 
 	async disconnect() {
 		if (this._UniversalProvider?.session) {
-			await this._modal?.disconnect()
+			// Lazy load the modal
+			await this.initModal()
+			if(!this._modal) throw Error("WalletConnect Adapter -Modal is undefined: unable to disconnect")
+			await this._modal.disconnect()
 			this._session = undefined
 		} else {
 			throw new ClientNotInitializedError()

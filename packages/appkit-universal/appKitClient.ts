@@ -104,8 +104,7 @@ export class WalletConnectModal extends Web3ModalScaffold {
 		universalProvider.client.on('session_delete', this.syncAccount)
 	}
 
-	
-	async disconnect(){
+	async disconnect() {
 		await this.universalProvider.disconnect()
 		this.syncAccount()
 	}

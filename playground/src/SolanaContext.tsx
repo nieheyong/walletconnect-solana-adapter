@@ -20,7 +20,7 @@ export const SolanaContext = ({ children }: { children: ReactNode }) => {
 
 	// You can also provide a custom RPC endpoint.
 	const endpoint = useMemo(() => clusterApiUrl(currentNetwork), [currentNetwork])
-	
+
 	const wallets = useMemo(
 		() => [
 			new WalletConnectWalletAdapter({
