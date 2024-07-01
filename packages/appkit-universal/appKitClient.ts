@@ -1,6 +1,7 @@
 import type { ConnectionControllerClient, LibraryOptions, NetworkControllerClient } from '@web3modal/scaffold'
 import { Web3ModalScaffold } from '@web3modal/scaffold'
 import { ConstantsUtil, PresetsUtil } from '@web3modal/scaffold-utils'
+import { ConstantsUtil as CommonConstantsUtil } from '@web3modal/common'
 import { type ConnectParams, UniversalProvider } from '@walletconnect/universal-provider'
 import { ApiController } from '@web3modal/core'
 // -- Types ---------------------------------------------------------------------
@@ -73,6 +74,7 @@ export class WalletConnectModal extends Web3ModalScaffold {
 			connectionControllerClient,
 			featuredWalletIds: [],
 			allowUnsupportedChain: true,
+			chain: CommonConstantsUtil.CHAIN.EVM,
 			//@ts-ignore version type
 			_sdkVersion: `universal-appkit-${ConstantsUtil.VERSION}`,
 			...{
@@ -96,6 +98,7 @@ export class WalletConnectModal extends Web3ModalScaffold {
 				info: {
 					rdns: id,
 				},
+				chain: CommonConstantsUtil.CHAIN.EVM
 			},
 		])
 		this.syncAccount()
@@ -120,12 +123,12 @@ export class WalletConnectModal extends Web3ModalScaffold {
 			const chainId = session.namespaces?.[connectedScope]?.accounts[0].split(':')[1]
 			this.setIsConnected(true)
 			this.setCaipAddress(session.namespaces?.[connectedScope]?.accounts[0] as `${string}:${string}:${string}`)
-			this.getApprovedCaipNetworksData()
 			this.setCaipNetwork({
 				id: (connectedScope + chainId) as `${string}:${string}`,
 				name: connectedScope,
 				imageId: PresetsUtil.EIP155NetworkImageIds[chainId],
 				imageUrl: this.options?.chainImages?.[chainId],
+				chain: CommonConstantsUtil.CHAIN.EVM
 			})
 			this.hasSyncedConnectedAccount = true
 		} else if (this.hasSyncedConnectedAccount) {
@@ -141,6 +144,7 @@ export class WalletConnectModal extends Web3ModalScaffold {
 			name: this.requestedScope,
 			imageId: PresetsUtil.EIP155NetworkImageIds[chainId],
 			imageUrl: this.options?.chainImages?.[chainId],
+			chain: CommonConstantsUtil.CHAIN.EVM
 		})
 		ApiController.reFetchWallets()
 	}
