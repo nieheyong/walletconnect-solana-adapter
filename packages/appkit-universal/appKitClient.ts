@@ -75,8 +75,9 @@ export class WalletConnectModal extends Web3ModalScaffold {
 			featuredWalletIds: [],
 			allowUnsupportedChain: true,
 			chain: CommonConstantsUtil.CHAIN.EVM,
+			isUniversalProvider: true,
 			//@ts-ignore version type
-			_sdkVersion: `universal-appkit-${ConstantsUtil.VERSION}`,
+			_sdkVersion: `universal-appkit-solana-adapter-${ConstantsUtil.VERSION}`,
 			...{
 				enableOnramp: false,
 				...w3mOptions,
@@ -98,7 +99,7 @@ export class WalletConnectModal extends Web3ModalScaffold {
 				info: {
 					rdns: id,
 				},
-				chain: CommonConstantsUtil.CHAIN.EVM
+				chain: CommonConstantsUtil.CHAIN.EVM,
 			},
 		])
 		this.syncAccount()
@@ -128,7 +129,7 @@ export class WalletConnectModal extends Web3ModalScaffold {
 				name: connectedScope,
 				imageId: PresetsUtil.EIP155NetworkImageIds[chainId],
 				imageUrl: this.options?.chainImages?.[chainId],
-				chain: CommonConstantsUtil.CHAIN.EVM
+				chain: CommonConstantsUtil.CHAIN.EVM,
 			})
 			this.hasSyncedConnectedAccount = true
 		} else if (this.hasSyncedConnectedAccount) {
@@ -144,7 +145,7 @@ export class WalletConnectModal extends Web3ModalScaffold {
 			name: this.requestedScope,
 			imageId: PresetsUtil.EIP155NetworkImageIds[chainId],
 			imageUrl: this.options?.chainImages?.[chainId],
-			chain: CommonConstantsUtil.CHAIN.EVM
+			chain: CommonConstantsUtil.CHAIN.EVM,
 		})
 		ApiController.reFetchWallets()
 	}
