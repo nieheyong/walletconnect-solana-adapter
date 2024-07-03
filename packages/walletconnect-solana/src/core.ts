@@ -117,7 +117,7 @@ export class WalletConnectWallet {
 		if (this._UniversalProvider?.session) {
 			// Lazy load the modal
 			await this.initModal()
-			if(!this._modal) throw Error("WalletConnect Adapter -Modal is undefined: unable to disconnect")
+			if (!this._modal) throw Error('WalletConnect Adapter -Modal is undefined: unable to disconnect')
 			await this._modal.disconnect()
 			this._session = undefined
 		} else {
