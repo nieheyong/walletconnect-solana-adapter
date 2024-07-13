@@ -1,10 +1,10 @@
 import { Transaction, VersionedTransaction, PublicKey } from '@solana/web3.js'
 import type { WalletConnectModal } from '@walletconnect/solana-adapter-ui'
 import UniversalProvider, { type ConnectParams } from '@walletconnect/universal-provider'
-import type { EngineTypes, SessionTypes, SignClientTypes } from '@walletconnect/types'
-import { getSdkError, parseAccountId } from '@walletconnect/utils'
+import type { SessionTypes, SignClientTypes } from '@walletconnect/types'
+import { parseAccountId } from '@walletconnect/utils'
 import base58 from 'bs58'
-import { ClientNotInitializedError, QRCodeModalError } from './errors.js'
+import { ClientNotInitializedError } from './errors.js'
 import { getChainsFromChainId, getDefaultChainFromSession } from './utils/chainIdPatch.js'
 import { WalletConnectionError } from '@solana/wallet-adapter-base'
 
