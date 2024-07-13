@@ -15,7 +15,7 @@
 		"alpha": "pnpm -F './packages/**' exec pnpm version prerelease --preid alpha",
 		"beta": "pnpm -F './packages/**' exec pnpm version prerelease --preid beta",
 		"prerelease": "pnpm -F './packages/**' exec pnpm version prerelease",
-		"release": "pnpm run build:packages && pnpm -F './packages/**' publish",
+		"release:stable": "pnpm run build:packages && pnpm -F './packages/**' publish",
 		"release:alpha": "pnpm run build:packages && pnpm -F './packages/**' publish --tag alpha",
 		"release:beta": "pnpm run build:packages && pnpm -F './packages/**' publish --tag beta",
 		"release:canary": "pnpm run build:packages && pnpm -F './packages/**' publish --tag canary"
