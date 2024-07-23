@@ -1,12 +1,14 @@
 import { Transaction, VersionedTransaction, PublicKey } from '@solana/web3.js'
 import type { WalletConnectModal } from '@walletconnect/solana-adapter-ui'
-import UniversalProvider, { type ConnectParams } from '@walletconnect/universal-provider'
+import { UniversalProvider, type ConnectParams } from '@walletconnect/universal-provider'
 import type { SessionTypes, SignClientTypes } from '@walletconnect/types'
 import { parseAccountId } from '@walletconnect/utils'
 import base58 from 'bs58'
 import { ClientNotInitializedError } from './errors.js'
 import { getChainsFromChainId, getDefaultChainFromSession } from './utils/chainIdPatch.js'
 import { WalletConnectionError } from '@solana/wallet-adapter-base'
+
+type UniversalProviderType = Awaited<ReturnType<typeof UniversalProvider.init>>
 
 export interface WalletConnectWalletAdapterConfig {
 	network: WalletConnectChainID
@@ -48,7 +50,7 @@ const isVersionedTransaction = (transaction: Transaction | VersionedTransaction)
 	'version' in transaction
 
 export class WalletConnectWallet {
-	private _UniversalProvider: UniversalProvider | undefined
+	private _UniversalProvider: UniversalProviderType | undefined
 	private _session: SessionTypes.Struct | undefined
 	private _modal: WalletConnectModal | undefined
 	private _projectId: string
@@ -125,7 +127,7 @@ export class WalletConnectWallet {
 		}
 	}
 
-	get client(): UniversalProvider {
+	get client(): UniversalProviderType {
 		if (this._UniversalProvider) {
 			// TODO: using client.off throws an error
 			return this._UniversalProvider
