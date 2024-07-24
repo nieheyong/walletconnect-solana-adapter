@@ -150,4 +150,9 @@ export class WalletConnectOnlyDisplayUriWalletAdapter extends BaseSignerWalletAd
       throw error
     }
   }
+
+  onWalletEvents(event: any, listener: any) {
+    this._wallet.events.on(event, listener)
+    return () => this._wallet.events.off(event, listener)
+  }
 }

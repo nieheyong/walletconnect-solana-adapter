@@ -12,6 +12,7 @@ import {
   getDefaultChainFromSession,
 } from './utils/chainIdPatch'
 import { WalletConnectionError } from '@solana/wallet-adapter-base'
+import { EventEmitter } from 'events'
 
 type UniversalProviderType = Awaited<ReturnType<typeof UniversalProvider.init>>
 
@@ -59,6 +60,7 @@ const isVersionedTransaction = (
 ): transaction is VersionedTransaction => 'version' in transaction
 
 export class WalletConnectWallet {
+  public events = new EventEmitter()
   private _UniversalProvider: UniversalProviderType | undefined
   private _session: SessionTypes.Struct | undefined
   private _projectId: string
@@ -244,6 +246,25 @@ export class WalletConnectWallet {
   async initClient(options: SignClientTypes.Options) {
     const provider = await UniversalProvider.init(options)
     this._UniversalProvider = provider
+    this.registerEventListeners()
     if (this._ConnectQueueResolver) this._ConnectQueueResolver(true)
+  }
+
+  public registerEventListeners() {
+    const provider = this._UniversalProvider!
+
+    const allEvent = [
+      'session_event',
+      'chainChanged',
+      'session_update',
+      'session_delete',
+      'display_uri',
+    ]
+
+    for (const event of allEvent) {
+      provider.on(event, (...args: any) => {
+        this.events.emit(event, ...args)
+      })
+    }
   }
 }
