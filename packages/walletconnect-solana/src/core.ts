@@ -1,5 +1,4 @@
 import { Transaction, VersionedTransaction, PublicKey } from '@solana/web3.js'
-import type { WalletConnectModal } from '@walletconnect/solana-adapter-ui'
 import {
   UniversalProvider,
   type ConnectParams,
@@ -62,7 +61,6 @@ const isVersionedTransaction = (
 export class WalletConnectWallet {
   private _UniversalProvider: UniversalProviderType | undefined
   private _session: SessionTypes.Struct | undefined
-  private _modal: WalletConnectModal | undefined
   private _projectId: string
   private _network: WalletConnectChainID
   private _ConnectQueueResolver: ((value: unknown) => void) | undefined
@@ -102,24 +100,23 @@ export class WalletConnectWallet {
       }
     } else {
       try {
-        // Lazy load the modal
-        await this.initModal()
-        //@ts-ignore AllWallets view type missing.
-        this._modal?.open({ view: 'AllWallets' })
-        let unsubscribeFromModalState: (() => void) | undefined
-        const session: SessionTypes.Struct | undefined = await new Promise(
-          (res) => {
-            unsubscribeFromModalState = this._modal?.subscribeState(
-              ({ open }) => {
-                if (!open) {
-                  res(this._UniversalProvider?.session)
-                }
-              },
-            )
+        const session = await new Promise<SessionTypes.Struct | undefined>(
+          async (resolve, reject) => {
+            await this._UniversalProvider
+              ?.connect({
+                // TODO: maybe optionalNamespaces: getConnectParams(this._network).optionalNamespaces,
+                namespaces: getConnectParams(this._network).optionalNamespaces,
+              })
+              .then((session?: SessionTypes.Struct) => {
+                resolve(session)
+              })
+              .catch((error: Error) => {
+                reject(new Error(error.message))
+              })
           },
         )
+
         this._session = session
-        unsubscribeFromModalState?.()
         if (!session) {
           throw new WalletConnectionError()
         }
@@ -139,13 +136,7 @@ export class WalletConnectWallet {
 
   async disconnect() {
     if (this._UniversalProvider?.session) {
-      // Lazy load the modal
-      await this.initModal()
-      if (!this._modal)
-        throw Error(
-          'WalletConnect Adapter -Modal is undefined: unable to disconnect',
-        )
-      await this._modal.disconnect()
+      await this._UniversalProvider.disconnect()
       this._session = undefined
     } else {
       throw new ClientNotInitializedError()
@@ -254,26 +245,5 @@ export class WalletConnectWallet {
     const provider = await UniversalProvider.init(options)
     this._UniversalProvider = provider
     if (this._ConnectQueueResolver) this._ConnectQueueResolver(true)
-  }
-
-  async initModal() {
-    if (this._modal) return
-    if (!this._UniversalProvider)
-      throw new Error(
-        'WalletConnect Adapter - cannot init modal when Universal Provider is undefined',
-      )
-
-    const { WalletConnectModal } = await import(
-      '@walletconnect/solana-adapter-ui'
-    )
-
-    this._modal = new WalletConnectModal({
-      projectId: this._projectId,
-      universalProvider: this._UniversalProvider,
-      namespaces: getConnectParams(this._network).optionalNamespaces as Exclude<
-        ConnectParams['optionalNamespaces'],
-        undefined
-      >,
-    })
   }
 }

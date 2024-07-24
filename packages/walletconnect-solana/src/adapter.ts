@@ -23,13 +23,13 @@ import type {
 } from '@solana/web3.js'
 
 export const WalletConnectWalletName =
-  'WalletConnect' as WalletName<'WalletConnect'>
+  'WalletConnectOnlyDisplayUri' as WalletName<'WalletConnect'>
 
 export type WalletConnectWalletAdapterConfig = {
   network: WalletAdapterNetwork.Mainnet | WalletAdapterNetwork.Devnet
 } & Pick<BaseWalletConnectWalletAdapterConfig, 'options'>
 
-export class WalletConnectWalletAdapter extends BaseSignerWalletAdapter {
+export class WalletConnectOnlyDisplayUriWalletAdapter extends BaseSignerWalletAdapter {
   name = WalletConnectWalletName
   url = 'https://walletconnect.org'
   icon =
