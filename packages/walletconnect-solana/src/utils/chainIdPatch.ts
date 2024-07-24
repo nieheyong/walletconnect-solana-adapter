@@ -1,5 +1,5 @@
 import type { SessionTypes } from '@walletconnect/types'
-import { SolanaChainIDs as Chains } from './constants.js'
+import { SolanaChainIDs as Chains } from './constants'
 
 type ChainIDType = (typeof Chains)[keyof typeof Chains]
 

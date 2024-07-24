@@ -6,11 +6,11 @@ import {
 import type { SessionTypes, SignClientTypes } from '@walletconnect/types'
 import { parseAccountId } from '@walletconnect/utils'
 import base58 from 'bs58'
-import { ClientNotInitializedError } from './errors.js'
+import { ClientNotInitializedError } from './errors'
 import {
   getChainsFromChainId,
   getDefaultChainFromSession,
-} from './utils/chainIdPatch.js'
+} from './utils/chainIdPatch'
 import { WalletConnectionError } from '@solana/wallet-adapter-base'
 
 type UniversalProviderType = Awaited<ReturnType<typeof UniversalProvider.init>>

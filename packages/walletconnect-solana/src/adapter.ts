@@ -2,7 +2,7 @@ import {
   WalletConnectChainID,
   WalletConnectWallet,
   type WalletConnectWalletAdapterConfig as BaseWalletConnectWalletAdapterConfig,
-} from './core.js'
+} from './core'
 import type { WalletError, WalletName } from '@solana/wallet-adapter-base'
 import {
   BaseSignerWalletAdapter,
