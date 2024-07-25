@@ -49,6 +49,8 @@ export class WalletConnectOnlyDisplayUriWalletAdapter extends BaseSignerWalletAd
       ? WalletReadyState.Unsupported
       : WalletReadyState.Loadable
 
+  private _onDisconnect: WalletConnectOnlyDisplayUriWalletAdapter['disconnect'] | undefined
+
   constructor(config: WalletConnectWalletAdapterConfig) {
     super()
 
@@ -62,6 +64,8 @@ export class WalletConnectOnlyDisplayUriWalletAdapter extends BaseSignerWalletAd
           : WalletConnectChainID.Devnet,
       options: this._config.options,
     })
+
+    this._onDisconnect = this.disconnect.bind(this)
   }
 
   get publicKey() {
@@ -87,7 +91,7 @@ export class WalletConnectOnlyDisplayUriWalletAdapter extends BaseSignerWalletAd
       const { publicKey } = await this._wallet.connect()
       this._publicKey = publicKey
       this.emit('connect', publicKey)
-      this._wallet.client.on('session_delete', this.disconnect)
+      this._wallet.client.on('session_delete', this._onDisconnect)
     } catch (error: unknown) {
       if ((error as Error).constructor.name === 'QRCodeModalError')
         throw new WalletWindowClosedError()
