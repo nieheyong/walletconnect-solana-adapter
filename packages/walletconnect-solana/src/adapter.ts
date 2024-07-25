@@ -105,7 +105,7 @@ export class WalletConnectOnlyDisplayUriWalletAdapter extends BaseSignerWalletAd
     this._connecting = false
     const wallet = this._wallet
     if (wallet) {
-      wallet.client.off('session_delete', this.disconnect)
+      wallet.client.off('session_delete', this._onDisconnect)
       this._publicKey = null
 
       try {
