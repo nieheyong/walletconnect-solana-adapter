@@ -92,7 +92,7 @@ export class WalletConnectWalletAdapter extends BaseSignerWalletAdapter {
 	async disconnect(): Promise<void> {
 		const wallet = this._wallet
 		if (wallet) {
-			wallet.client.off('session_delete', this.disconnect)
+			wallet.client.off('session_delete', this._onDisconnect)
 			this._publicKey = null
 
 			try {
