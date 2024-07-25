@@ -98,6 +98,7 @@ export class WalletConnectOnlyDisplayUriWalletAdapter extends BaseSignerWalletAd
   }
 
   async disconnect(): Promise<void> {
+    this._connecting = false
     const wallet = this._wallet
     if (wallet) {
       wallet.client.off('session_delete', this.disconnect)
